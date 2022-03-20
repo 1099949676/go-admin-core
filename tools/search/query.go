@@ -81,8 +81,10 @@ func ResolveSearchQuery(driver string, q interface{}, condition Condition) {
 			condition.SetWhere(fmt.Sprintf("`%s`.`%s` <= ?", t.Table, t.Column), []interface{}{qValue.Field(i).Interface()})
 		case "between":
 			str_arr := qValue.Field(i).Interface().([]string)
-			condition.SetWhere(fmt.Sprintf("`%s`.`%s` >= ?", t.Table, t.Column), []interface{}{str_arr[0]})
-			condition.SetWhere(fmt.Sprintf("`%s`.`%s` <= ?", t.Table, t.Column), []interface{}{str_arr[1]})
+			if len(str_arr) == 2 {
+				condition.SetWhere(fmt.Sprintf("`%s`.`%s` >= ?", t.Table, t.Column), []interface{}{str_arr[0]})
+				condition.SetWhere(fmt.Sprintf("`%s`.`%s` <= ?", t.Table, t.Column), []interface{}{str_arr[1]})
+			}
 		case "startswith", "istartswith":
 			if driver == Postgres && t.Type == "istartswith" {
 				condition.SetWhere(fmt.Sprintf("`%s`.`%s` ilike ?", t.Table, t.Column), []interface{}{qValue.Field(i).String() + "%"})
